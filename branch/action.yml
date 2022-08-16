@@ -7,9 +7,6 @@ inputs:
   jira-username:
     description: 'Valid user in Jira'
     required: true
-  excluded-branch:
-    description: 'A branch that should return true for this check'
-    required: true
   jira-password:
     description: 'password for corresponding username input'
     required: true
@@ -18,13 +15,11 @@ runs:
   steps:
       # First check the format is OK
       - name: Branch format is correct
-        if: startsWith( github.ref, 'refs/heads/${{ inputs.excluded-branch }}') == false
         run: |
           [[ "${{ github.ref }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/[a-zA-Z0-9]+-[0-9]+ ]] && echo matched || exit 1
       
       # Next query the API to verify it is in the correct state
       - name: PR exists and state in Jira is not Done
-        if: startsWith( github.ref, 'refs/heads/${{ inputs.excluded-branch }}') == false
         run: |
           [[ "${{ github.ref }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/([a-zA-Z0-9]+-[0-9]+) ]]
           issue_key=${BASH_REMATCH[2]}
