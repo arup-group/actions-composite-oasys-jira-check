@@ -1,0 +1,39 @@
+name: 'Check Branch Naming convention'
+description: 'Look in Jira to check branch names match with Jira ticket key'
+inputs:
+  valid-branch-names:  # id of input
+    description: 'Branches names that are allowed delimited by a pipe (|) e.g. task|test|bugfix|feature|hotfix|epic|release'
+    required: true
+  jira-username:
+    description: 'Valid user in Jira'
+    required: true
+  excluded-branch:
+    description: 'A branch that should return true for this check'
+    required: true
+  jira-password:
+    description: 'password for corresponding username input'
+    required: true
+runs:
+  using: "composite"
+  steps:
+      # First check the format is OK
+      - name: Branch format is correct
+        if: startsWith( github.ref, 'refs/heads/${{ inputs.excluded-branch }}') == false
+        run: |
+          [[ "${{ github.ref }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/[a-zA-Z0-9]+-[0-9]+ ]] && echo matched || exit 1
+      
+      # Next query the API to verify it is in the correct state
+      - name: PR exists and state in Jira is not Done
+        if: startsWith( github.ref, 'refs/heads/${{ inputs.excluded-branch }}') == false
+        run: |
+          [[ "${{ github.ref }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/([a-zA-Z0-9]+-[0-9]+) ]]
+          issue_key=${BASH_REMATCH[2]}
+
+          issue_status=$(curl \
+             -u ${{ inputs.jira-username }}:${{ secrets.JIRA_PASSWORD }} \
+             -X GET \
+             -H "Content-Type: application/json" \
+             https://ovearup.atlassian.net/rest/api/3/issue/${issue_key} \
+             | jq -r '.fields.status.name')
+
+          [[ $issue_status == "Done" || $issue_status == null ]] && exit 1 || echo $issue_status
