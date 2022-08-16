@@ -25,7 +25,7 @@ runs:
           issue_key=${BASH_REMATCH[2]}
 
           issue_status=$(curl \
-             -u ${{ inputs.jira-username }}:${{ secrets.JIRA_PASSWORD }} \
+             -u ${{ inputs.jira-username }}:${{ inputs.jira-password }} \
              -X GET \
              -H "Content-Type: application/json" \
              https://ovearup.atlassian.net/rest/api/3/issue/${issue_key} \
