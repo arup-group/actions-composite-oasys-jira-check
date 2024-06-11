@@ -18,22 +18,25 @@ def get_inputs():
     return branch_to_check, valid_branch_names, jira_username, jira_password
 
 
-def check_branch_format(branch_to_check, valid_branch_names):
+def extract_issue_key(branch_to_check, valid_branch_names):
     # Check the branch format
     match = re.match(
-        rf"^refs/heads/({valid_branch_names})/([a-zA-Z0-9]+-[0-9]+)", branch_to_check
+        rf"^(refs/heads/)?({valid_branch_names})/([a-zA-Z0-9]+-[0-9]+)", branch_to_check
     )
     if not match:
         raise RuntimeError("Branch format is incorrect")
-    return match.group(2)
+    return match.group(3)
 
 
 def query_jira_api(issue_key, jira_username, jira_password):
-    # Query the Jira API
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+    }
     response = requests.get(
         f"https://ovearup.atlassian.net/rest/api/3/issue/{issue_key}",
+        headers=headers,
         auth=(jira_username, jira_password),
-        headers={"Content-Type": "application/json"},
     )
     response.raise_for_status()
     return response
@@ -44,13 +47,16 @@ def check_status_category(response):
     issue_status_cat = json.loads(response.text)["fields"]["status"]["statusCategory"][
         "id"
     ]
-    if issue_status_cat != "4":
-        sys.exit('Status category is not "In Progress"')
+    in_progress = 4
+    if issue_status_cat != in_progress:
+        raise RuntimeError(
+            f"Status category is not 'In Progress', but {issue_status_cat}"
+        )
 
 
 def main():
     branch_to_check, valid_branch_names, jira_username, jira_password = get_inputs()
-    issue_key = check_branch_format(branch_to_check, valid_branch_names)
+    issue_key = extract_issue_key(branch_to_check, valid_branch_names)
     response = query_jira_api(issue_key, jira_username, jira_password)
     check_status_category(response)
 
