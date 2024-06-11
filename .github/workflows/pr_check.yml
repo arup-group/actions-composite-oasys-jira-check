@@ -1,18 +1,15 @@
 name: Check Jira key in PR title exists and is valid
-
 # Runs when opening or changing a PR
-on: 
+on:
   pull_request:
     types: [opened, edited, reopened, synchronize]
     branches:
       - main
-    
 jobs:
   # This workflow contains a single job called "check-jira"
   check-jira:
     # Run on Ubuntu (Linux)
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - uses: ./branch
