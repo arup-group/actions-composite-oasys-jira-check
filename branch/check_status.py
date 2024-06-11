@@ -2,13 +2,17 @@ import os
 import re
 import requests
 import json
-import sys
 
 
 def get_inputs():
-    # Get the inputs from the GitHub Actions environment
+    # Get the inputs from the GitHub Actions environment or local .env
+    import dotenv
+
+    dotenv.load_dotenv()
     branch_to_check = os.getenv("INPUT_BRANCH_TO_CHECK")
-    valid_branch_names = os.getenv("INPUT_VALID_BRANCH_NAMES")
+    valid_branch_names = os.getenv(
+        "INPUT_VALID_BRANCH_NAMES", "task|test|bugfix|feature|hotfix|epic"
+    )
     jira_username = os.getenv("INPUT_JIRA_USERNAME")
     jira_password = os.getenv("INPUT_JIRA_PASSWORD")
     return branch_to_check, valid_branch_names, jira_username, jira_password

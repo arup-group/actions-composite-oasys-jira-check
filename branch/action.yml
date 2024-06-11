@@ -4,6 +4,7 @@ inputs:
   valid-branch-names: # id of input
     description: 'Branches names that are allowed delimited by a pipe (|) e.g. task|test|bugfix|feature|hotfix|epic|release'
     required: true
+    default: 'task|test|bugfix|feature|hotfix|epic|release'
   jira-username:
     description: 'Valid user in Jira'
     required: true

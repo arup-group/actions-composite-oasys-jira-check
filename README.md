@@ -42,3 +42,9 @@ jobs:
           jira-username: automation@arup.com
           jira-password: ${{ secrets.JIRA_PASSWORD }}
 ```
+
+
+## Development
+
+For local debug and development, you can run the python scripts directly.
+Copy `.env.example` to `.env` and fill in the values.
