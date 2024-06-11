@@ -22,18 +22,25 @@ runs:
       shell: bash
       run: |
         [[ "${{ inputs.branch_to_check }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/[a-zA-Z0-9]+-[0-9]+ ]] && echo matched || exit 1
+    - name: Setup Python
+      id: setup-python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        # This way we don't interfere with an active setup in the parent workflow
+        update-environment: false
+        cache: pip
+        cache-dependency-path: ${{ github.action_path }}/requirements.txt
+    - name: Install dependencies
+      shell: bash
+      run: |
+        ${{ steps.setup-python.outputs.python-path }} -m pip install -r ${{ github.action_path }}/requirements.txt
     # Next query the API to verify it is in the correct state
     - name: PR exists and state in Jira is not Done
       shell: bash
-      run: |
-        [[ "${{ inputs.branch_to_check }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/([a-zA-Z0-9]+-[0-9]+) ]]
-        issue_key=${BASH_REMATCH[2]}
-        # category 4 is "In Progress" https://ovearup.atlassian.net/rest/api/3/statuscategory/4
-        issue_status_cat=$(curl \
-          -u ${{ inputs.jira-username }}:${{ inputs.jira-password }} \
-          -X GET \
-          -H "Content-Type: application/json" \
-          "https://ovearup.atlassian.net/rest/api/3/issue/${issue_key}" \
-          | jq -r '.fields.status.statusCategory.id')
-
-        [[ "$issue_status_cat" == "4" ]] || (echo 'Status category is not "In Progress"' ; exit 1)
+      run: ${{ steps.setup-python.outputs.python-path }} ${{ github.action_path }}/check_status.py
+      env:
+        INPUT_BRANCH_TO_CHECK: ${{ inputs.branch_to_check }}
+        INPUT_JIRA_USERNAME: ${{ inputs.jira-username }}
+        INPUT_JIRA_PASSWORD: ${{ inputs.jira-password }}
+        INPUT_VALID_BRANCH_NAMES: ${{ inputs.valid-branch-names }}
