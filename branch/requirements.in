@@ -1,6 +1,2 @@
 requests
 python-dotenv
-pytest
-pytest-cov
-pytest-pycharm
-requests-mock
