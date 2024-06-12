@@ -11,7 +11,7 @@ def test_status_category_in_progress():
         issue_key = "TEST-1"
         m.get(
             f"https://ovearup.atlassian.net/rest/api/3/issue/{issue_key}",
-            text=json.dumps({"fields": {"status": {"statusCategory": {"id": 4}}}}),
+            text=json.dumps({"fields": {"status": {"statusCategory": {"id": 4, "name": "In Progress"}}}}),
         )
         response = check_status.query_jira_api(issue_key, "username", "password")
         check_status.check_status_category(response)
@@ -22,7 +22,7 @@ def test_status_category_not_in_progress():
         issue_key = "TEST-1"
         m.get(
             f"https://ovearup.atlassian.net/rest/api/3/issue/{issue_key}",
-            text=json.dumps({"fields": {"status": {"statusCategory": {"id": 5}}}}),
+            text=json.dumps({"fields": {"status": {"statusCategory": {"id": 5, "name": "Done"}}}}),
         )
         response = check_status.query_jira_api(issue_key, "username", "password")
         with pytest.raises(RuntimeError):
@@ -109,7 +109,8 @@ def test_get_inputs_with_missing_input(monkeypatch):
     monkeypatch.setenv("INPUT_BRANCH_TO_CHECK", "refs/heads/feature/TEST-123")
     monkeypatch.setenv("INPUT_VALID_BRANCH_NAMES", "task|test|bugfix|feature|hotfix|epic")
     monkeypatch.setenv("INPUT_JIRA_USERNAME", "username")
-    monkeypatch.delenv("INPUT_JIRA_PASSWORD", raising=False)
+    # deleting from env does not work since get_inputs runs dotenv.load_dotenv()
+    monkeypatch.setenv("INPUT_JIRA_PASSWORD", "")
     with pytest.raises(RuntimeError):
         check_status.get_inputs()
 
