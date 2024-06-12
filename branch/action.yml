@@ -30,8 +30,6 @@ runs:
         python-version: '3.12'
         # This way we don't interfere with an active setup in the parent workflow
         update-environment: false
-        cache: pip
-        cache-dependency-path: ${{ github.action_path }}/requirements.txt
     - name: Install dependencies
       shell: bash
       run: |
