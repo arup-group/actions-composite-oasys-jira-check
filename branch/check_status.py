@@ -38,13 +38,27 @@ def extract_issue_key(branch_to_check: str, valid_branch_names: str):
     return match.group(3)
 
 
+def extract_project_key(issue_key: str) -> str:
+    return issue_key.split("-")[0]
+
+
+def check_project_access(project_key: str, jira_username: str, jira_password: str):
+    url = f"https://ovearup.atlassian.net/rest/api/3/project/{project_key}"
+    return jira_request(jira_password, jira_username, url)
+
+
 def query_jira_api(issue_key: str, jira_username: str, jira_password: str) -> dict:
+    url = f"https://ovearup.atlassian.net/rest/api/3/issue/{issue_key}"
+    return jira_request(jira_password, jira_username, url)
+
+
+def jira_request(jira_password, jira_username, url):
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
     }
     response = requests.get(
-        f"https://ovearup.atlassian.net/rest/api/3/issue/{issue_key}",
+        url,
         headers=headers,
         auth=(jira_username, jira_password),
         timeout=10,
@@ -70,6 +84,7 @@ def check_status_category(response_json: dict):
 def main():
     branch_to_check, valid_branch_names, jira_username, jira_password = get_inputs()
     issue_key = extract_issue_key(branch_to_check, valid_branch_names)
+    check_project_access(extract_project_key(issue_key), jira_username, jira_password)
     response = query_jira_api(issue_key, jira_username, jira_password)
     check_status_category(response)
 
