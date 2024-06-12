@@ -1,7 +1,7 @@
 name: 'Check Branch Naming convention'
 description: 'Look in Jira to check branch names match with Jira ticket key'
 inputs:
-  valid-branch-names:  # id of input
+  valid-branch-names: # id of input
     description: 'Branches names that are allowed delimited by a pipe (|) e.g. task|test|bugfix|feature|hotfix|epic|release'
     required: true
   jira-username:
@@ -17,24 +17,23 @@ inputs:
 runs:
   using: "composite"
   steps:
-      # First check the format is OK
-      - name: Branch format is correct
-        shell: bash
-        run: |
-          [[ "${{ inputs.branch_to_check }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/[a-zA-Z0-9]+-[0-9]+ ]] && echo matched || exit 1
-      
-      # Next query the API to verify it is in the correct state
-      - name: PR exists and state in Jira is not Done
-        shell: bash
-        run: |
-          [[ "${{ inputs.branch_to_check }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/([a-zA-Z0-9]+-[0-9]+) ]]
-          issue_key=${BASH_REMATCH[2]}
-          # category 4 is "In Progress" https://ovearup.atlassian.net/rest/api/3/statuscategory/4
-          issue_status_cat=$(curl \
-            -u ${{ inputs.jira-username }}:${{ inputs.jira-password }} \
-            -X GET \
-            -H "Content-Type: application/json" \
-            "https://ovearup.atlassian.net/rest/api/3/issue/${issue_key}" \
-            | jq -r '.fields.status.statusCategory.id')
+    # First check the format is OK
+    - name: Branch format is correct
+      shell: bash
+      run: |
+        [[ "${{ inputs.branch_to_check }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/[a-zA-Z0-9]+-[0-9]+ ]] && echo matched || exit 1
+    # Next query the API to verify it is in the correct state
+    - name: PR exists and state in Jira is not Done
+      shell: bash
+      run: |
+        [[ "${{ inputs.branch_to_check }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/([a-zA-Z0-9]+-[0-9]+) ]]
+        issue_key=${BASH_REMATCH[2]}
+        # category 4 is "In Progress" https://ovearup.atlassian.net/rest/api/3/statuscategory/4
+        issue_status_cat=$(curl \
+          -u ${{ inputs.jira-username }}:${{ inputs.jira-password }} \
+          -X GET \
+          -H "Content-Type: application/json" \
+          "https://ovearup.atlassian.net/rest/api/3/issue/${issue_key}" \
+          | jq -r '.fields.status.statusCategory.id')
 
-          [[ "$issue_status_cat" == "4" ]] || (echo 'Status category is not "In Progress"' ; exit 1)
+        [[ "$issue_status_cat" == "4" ]] || (echo 'Status category is not "In Progress"' ; exit 1)
