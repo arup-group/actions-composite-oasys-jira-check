@@ -15,6 +15,13 @@ inputs:
     description: 'Branch to check'
     required: false
     default: ${{ github.ref }}
+outputs:
+  jira_issue_key:
+    description: 'Jira issue key'
+    value: ${{ steps.run_jira_query.outputs.jira_issue_key }}
+  jira_issue_status:
+    description: 'Jira issue status fields as a JSON string'
+    value: ${{ steps.run_jira_query.outputs.jira_issue_status }}
 runs:
   using: "composite"
   steps:
@@ -37,6 +44,7 @@ runs:
     # Next query the API to verify it is in the correct state
     - name: PR exists and state in Jira is not Done
       shell: bash
+      id: run_jira_query
       run: ${{ steps.setup-python.outputs.python-path }} ${{ github.action_path }}/check_status.py
       env:
         INPUT_BRANCH_TO_CHECK: ${{ inputs.branch_to_check }}

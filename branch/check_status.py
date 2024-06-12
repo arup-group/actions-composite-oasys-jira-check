@@ -1,6 +1,9 @@
+import json
 import os
 import re
+import sys
 from collections import defaultdict
+from pathlib import Path
 
 import requests
 
@@ -67,26 +70,55 @@ def jira_request(jira_password, jira_username, url):
     return response.json()
 
 
-def check_status_category(response_json: dict):
+def check_status_category(response_json: dict) -> dict:
     try:
-        issue_status_cat = response_json["fields"]["status"]["statusCategory"]["id"]
+        status_cat = response_json["fields"]["status"]["statusCategory"]
+        status_cat_id = status_cat["id"]
+        status_cat_name = status_cat["name"]
     except KeyError as e:
         msg = f"Status category is missing from JSON response\n{response_json}"
         raise RuntimeError(msg) from e
     in_progress = 4
-    if issue_status_cat != in_progress:
-        msg = f"Status category is not 'In Progress', but {issue_status_cat}"
+    if status_cat_id != in_progress:
+        msg = f"Status category is not 'In Progress', but {status_cat_name}"
         raise RuntimeError(
             msg,
         )
+    return status_cat
 
 
 def main():
-    branch_to_check, valid_branch_names, jira_username, jira_password = get_inputs()
-    issue_key = extract_issue_key(branch_to_check, valid_branch_names)
-    check_project_access(extract_project_key(issue_key), jira_username, jira_password)
-    response = query_jira_api(issue_key, jira_username, jira_password)
-    check_status_category(response)
+    try:
+        branch_to_check, valid_branch_names, jira_username, jira_password = get_inputs()
+    except RuntimeError as e:
+        print(f"::error::Missing inputs. Checks Action setup.\n{e}")  # noqa: T201
+        sys.exit(1)
+    try:
+        issue_key = extract_issue_key(branch_to_check, valid_branch_names)
+    except RuntimeError as e:
+        print(f"::error::Could not extract issue key from branch name. Check branch name.\n{e}")  # noqa: T201
+        sys.exit(1)
+    project_key = extract_project_key(issue_key)
+    try:
+        check_project_access(project_key, jira_username, jira_password)
+    except requests.exceptions.HTTPError as e:
+        print(f"::error::Could not access project {project_key} in Jira. Check credentials and project access.\n{e}")  # noqa: T201
+        sys.exit(1)
+    try:
+        response = query_jira_api(issue_key, jira_username, jira_password)
+    except requests.exceptions.HTTPError as e:
+        print(f"::error::Could not access issue {issue_key} in Jira. Does the issue really exist?.\n{e}")  # noqa: T201
+        sys.exit(1)
+    try:
+        cat = check_status_category(response)
+    except RuntimeError as e:
+        print(f"::error::Issue {issue_key} is not in progress. Check issue status.\n{e}")  # noqa: T201
+        sys.exit(1)
+    with Path(os.environ.get("GITHUB_OUTPUT")).open(mode="a") as out_file:
+        out_file.write(f"jira_issue_key={issue_key}\n")
+        cat_repr = json.dumps(cat)
+        out_file.write(f"jira_issue_category={cat_repr}\n")
+        out_file.write(f"jira_project_key={project_key}\n")
 
 
 if __name__ == "__main__":
