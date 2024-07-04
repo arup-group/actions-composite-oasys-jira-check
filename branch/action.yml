@@ -15,6 +15,10 @@ inputs:
     description: 'Branch to check'
     required: false
     default: ${{ github.ref }}
+  pr_title:
+    description: 'If non-empty, checked for Jira key and branch name match'
+    required: false
+    default: ''
 outputs:
   jira_issue_key:
     description: 'Jira issue key'
@@ -46,3 +50,4 @@ runs:
         INPUT_JIRA_USERNAME: ${{ inputs.jira-username }}
         INPUT_JIRA_PASSWORD: ${{ inputs.jira-password }}
         INPUT_VALID_BRANCH_NAMES: ${{ inputs.valid-branch-names }}
+        INPUT_PR_TITLE: ${{ inputs.pr_title }}

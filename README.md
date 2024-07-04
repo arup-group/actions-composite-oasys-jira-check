@@ -21,6 +21,9 @@ jobs:
           jira-username: automation@arup.com
           jira-password: ${{ secrets.JIRA_PASSWORD }}
           branch_to_check: refs/heads/${{ github.event.pull_request.head.ref }}
+          # Optional. If not provided, pr title is not checked for JIRA key
+          # If provided, checks PR title is formatted as `JIRA-1234 | My PR title`
+          pr_title: ${{ github.event.pull_request.title }}
 ```
 
 ## Push to branch workflow
