@@ -136,5 +136,29 @@ def test_get_inputs_with_default_valid_branch_names(monkeypatch):
     )
 
 
+def test_branch_name_matches_valid_pattern():
+    assert check_status.check_branch_name("refs/heads/feature/PROJ-123", "task|test|bugfix|feature|hotfix|epic") is True
+
+
+def test_branch_name_matches_without_refs_heads_prefix():
+    assert check_status.check_branch_name("feature/PROJ-123", "task|test|bugfix|feature|hotfix|epic") is True
+
+
+def test_branch_name_does_not_match_valid_pattern():
+    assert check_status.check_branch_name("refs/heads/misc/PROJ-123", "task|test|bugfix|feature|hotfix|epic") is False
+
+
+def test_branch_name_with_invalid_issue_key_format():
+    assert check_status.check_branch_name("feature/PROJ123", "task|test|bugfix|feature|hotfix|epic") is False
+
+
+def test_branch_name_with_custom_valid_pattern_passes():
+    assert check_status.check_branch_name("YOU_SHALL_NOT_PASS/OQS-123", "YOU_SHALL_NOT_PASS") is True
+
+
+def test_branch_name_with_custom_valid_pattern_fails():
+    assert check_status.check_branch_name("feature/OQS-123", "YOU_SHALL_NOT_PASS") is False
+
+
 if __name__ == "__main__":
     pytest.main()

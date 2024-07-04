@@ -87,11 +87,18 @@ def check_status_category(response_json: dict) -> dict:
     return status_cat
 
 
+def check_branch_name(branch_name: str, valid_branch_names: str) -> bool:
+    return bool(re.match(rf"^(refs/heads/)?({valid_branch_names})/([a-zA-Z0-9]+-[0-9]+)", branch_name))
+
+
 def main():
     try:
         branch_to_check, valid_branch_names, jira_username, jira_password = get_inputs()
     except RuntimeError as e:
         print(f"::error::Missing inputs. Checks Action setup.\n{e}")  # noqa: T201
+        sys.exit(1)
+    if not check_branch_name(branch_to_check, valid_branch_names):
+        print(f"::error::Branch name '{branch_to_check}' does not match the valid branch names ({valid_branch_names}).")  # noqa: T201
         sys.exit(1)
     try:
         issue_key = extract_issue_key(branch_to_check, valid_branch_names)

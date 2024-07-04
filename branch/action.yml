@@ -25,11 +25,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    # First check the format is OK
-    - name: Branch format is correct
-      shell: bash
-      run: |
-        [[ "${{ inputs.branch_to_check }}" =~ ^refs/heads/(${{ inputs.valid-branch-names }})\/[a-zA-Z0-9]+-[0-9]+ ]] && echo matched || exit 1
     - name: Setup Python
       id: setup-python
       uses: actions/setup-python@v5
