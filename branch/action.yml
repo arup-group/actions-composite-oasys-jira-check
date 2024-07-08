@@ -18,7 +18,7 @@ inputs:
   pr_title:
     description: 'If non-empty, checked for Jira key and branch name match'
     required: false
-    default: ''
+    default: None
 outputs:
   jira_issue_key:
     description: 'Jira issue key'
