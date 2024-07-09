@@ -218,8 +218,9 @@ def test_pr_title_format():
         check_status.check_pr_title(pr_title, issue_key)
 
 
-def test_extract_issue_key_pr_title_with_valid_format():
-    pr_title = "PROJ-123 | Corrected the logic"
+@pytest.mark.parametrize("middle", ["| ", ": ", " : ", " | "])
+def test_extract_issue_key_pr_title_with_valid_format(middle):
+    pr_title = f"PROJ-123{middle}Corrected the logic"
     assert check_status.extract_issue_key_pr_title(pr_title) == "PROJ-123"
 
 
