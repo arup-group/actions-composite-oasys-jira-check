@@ -22,7 +22,8 @@ jobs:
           jira-password: ${{ secrets.JIRA_PASSWORD }}
           branch_to_check: refs/heads/${{ github.event.pull_request.head.ref }}
           # Optional. If not provided, pr title is not checked for JIRA key
-          # If provided, checks PR title is formatted as `JIRA-1234 | My PR title`
+          # If provided, checks PR title is formatted as `JIRA-1234 | My PR title` or `JIRA-1234 : My PR title`
+          # where the whitespace before the delimiter is optional
           pr_title: ${{ github.event.pull_request.title }}
 ```
 

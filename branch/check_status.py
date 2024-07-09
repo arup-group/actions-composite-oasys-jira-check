@@ -54,7 +54,7 @@ def extract_issue_key_pr_title(pr_title: str):
     :return: the extracted issue key
     """
     match = re.match(
-        r"^([a-zA-Z0-9]+-[0-9]+)\s\|\s\w.*$",
+        r"^([a-zA-Z0-9]+-[0-9]+)\s?[|:]\s\w.*$",
         pr_title,
     )
     if not match:
