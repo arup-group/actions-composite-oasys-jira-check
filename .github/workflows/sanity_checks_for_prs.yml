@@ -3,6 +3,10 @@ name: sanity checks
 # workflow_dispatch triggers happen when a user manually runs the workflow
 # pull_request triggers happen when a pull request is updated
 on: [merge_group, pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
 jobs:
   pre-commit:
     name: Carry out pre-commit checks
@@ -35,6 +39,9 @@ jobs:
     name: Ensure Git etiquette
     runs-on: ubuntu-22.04
     timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
