@@ -10,5 +10,5 @@ python-dotenv==1.0.1
     # via -r requirements.in
 requests==2.32.4
     # via -r requirements.in
-urllib3==2.2.1
+urllib3==2.6.0
     # via requests
