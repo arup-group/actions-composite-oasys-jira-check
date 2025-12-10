@@ -4,12 +4,9 @@ on:
       - main
   merge_group:
   pull_request:
-
 name: pytest
-
 permissions:
   contents: read
-
 concurrency:
   group: ${{ github.ref }}_${{ github.workflow }}
   cancel-in-progress: true

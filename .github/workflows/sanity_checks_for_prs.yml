@@ -3,10 +3,8 @@ name: sanity checks
 # workflow_dispatch triggers happen when a user manually runs the workflow
 # pull_request triggers happen when a pull request is updated
 on: [merge_group, pull_request, workflow_dispatch]
-
 permissions:
   contents: read
-
 jobs:
   pre-commit:
     name: Carry out pre-commit checks
