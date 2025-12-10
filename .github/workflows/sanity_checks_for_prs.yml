@@ -10,7 +10,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -104,7 +104,7 @@ jobs:
                   raise RuntimeError(f'Merge commits are not allowed on PR branches: {commit["sha"]}')
         # we require the checkout for the mailmap check below
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # we rely on git log to determine all contributors
           fetch-depth: 0
