@@ -6,9 +6,9 @@ charset-normalizer==3.3.2
     # via requests
 idna==3.7
     # via requests
-python-dotenv==1.0.1
+python-dotenv==1.2.1
     # via -r requirements.in
-requests==2.32.4
+requests==2.32.5
     # via -r requirements.in
 urllib3==2.6.0
     # via requests
