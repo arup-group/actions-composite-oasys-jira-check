@@ -23,11 +23,11 @@ pytest==9.0.3
     #   -r dev-requirements.in
     #   pytest-cov
     #   pytest-pycharm
-pytest-cov==7.0.0
+pytest-cov==7.1.0
     # via -r dev-requirements.in
 pytest-pycharm==0.7.0
     # via -r dev-requirements.in
-requests==2.32.5
+requests==2.33.1
     # via requests-mock
 requests-mock==1.12.1
     # via -r dev-requirements.in
