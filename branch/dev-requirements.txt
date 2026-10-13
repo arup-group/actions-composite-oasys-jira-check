@@ -18,7 +18,7 @@ pluggy==1.5.0
     #   pytest-cov
 pygments==2.20.0
     # via pytest
-pytest==9.0.3
+pytest==9.1.1
     # via
     #   -r dev-requirements.in
     #   pytest-cov
@@ -27,7 +27,7 @@ pytest-cov==7.1.0
     # via -r dev-requirements.in
 pytest-pycharm==0.7.0
     # via -r dev-requirements.in
-requests==2.33.1
+requests==2.34.2
     # via requests-mock
 requests-mock==1.12.1
     # via -r dev-requirements.in
