@@ -12,13 +12,13 @@ iniconfig==2.0.0
     # via pytest
 packaging==24.1
     # via pytest
-pluggy==1.5.0
+pluggy==1.7.0
     # via
     #   pytest
     #   pytest-cov
 pygments==2.20.0
     # via pytest
-pytest==9.1.1
+pytest==9.2.0
     # via
     #   -r dev-requirements.in
     #   pytest-cov
